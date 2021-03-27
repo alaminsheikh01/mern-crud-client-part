@@ -1,15 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { getToken, getName } from "../helpers";
+import ReactQuill from "react-quill";
+import "../../node_modules/react-quill/dist/quill.bubble.css";
 
 const Create = () => {
   const [state, setState] = useState({
     title: "",
-    content: "",
-    user: "",
+    user: getName(),
   });
 
-  const { title, content, user } = state;
+  const [content, setContent] = useState("");
+
+  const handleContent = (e) => {
+    console.log(e);
+    setContent(e);
+  };
+
+  const { title, user } = state;
 
   const handleChange = (name) => (e) => {
     setState({ ...state, [name]: e.target.value });
@@ -30,7 +38,8 @@ const Create = () => {
       )
       .then((response) => {
         console.log(response);
-        setState({ ...state, title: "", content: "", user: "" });
+        setState({ ...state, title: "", user: "" });
+        setContent("");
         alert(`Post title ${response.data.title} is created`);
       })
       .catch((error) => {
@@ -62,13 +71,13 @@ const Create = () => {
               <br />
               <div className="form-group">
                 <label className="text-muted">Content</label>
-                <textarea
+                <ReactQuill
+                  theme="bubble"
                   value={content}
-                  onChange={handleChange("content")}
-                  type="text"
+                  onChange={handleContent}
                   placeholder="Write something"
-                  className="form-control"
-                  required
+                  className="pb-5 mb-3"
+                  style={{ border: "2px solid #666" }}
                 />
               </div>
               <br />

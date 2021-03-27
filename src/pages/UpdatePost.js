@@ -1,23 +1,32 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { getToken } from "../helpers";
+import ReactQuill from "react-quill";
+import "../../node_modules/react-quill/dist/quill.bubble.css";
+import { withRouter } from "react-router-dom";
 
 const UpdatePost = (props) => {
   const [state, setState] = useState({
     title: "",
-    content: "",
     slug: "",
     user: "",
   });
 
-  const { title, content, slug, user } = state;
+  const [content, setContent] = useState("");
+
+  const handleContent = (e) => {
+    setContent(e);
+  };
+
+  const { title, slug, user } = state;
 
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API}/post/${props.match.params.slug}`)
       .then((response) => {
         const { title, content, slug, user } = response.data;
-        setState({ ...state, title, content, slug, user });
+        setState({ ...state, title, slug, user });
+        setContent(content);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -44,6 +53,7 @@ const UpdatePost = (props) => {
       .then((response) => {
         const { title, content, slug, user } = response.data;
         setState({ ...state, title, content, slug, user });
+        props.history.push(`/post/${slug}`);
         alert(`Post title ${response.data.title} is Updated`);
       })
       .catch((err) => console.log(err.response));
@@ -66,13 +76,13 @@ const UpdatePost = (props) => {
         <br />
         <div className="form-group">
           <label className="text-muted">Content</label>
-          <textarea
+          <ReactQuill
+            theme="bubble"
             value={content}
-            onChange={handleChange("content")}
-            type="text"
+            onChange={handleContent}
             placeholder="Write something"
-            className="form-control"
-            required
+            className="pb-5 mb-3"
+            style={{ border: "2px solid #666" }}
           />
         </div>
         <br />
@@ -104,4 +114,4 @@ const UpdatePost = (props) => {
   );
 };
 
-export default UpdatePost;
+export default withRouter(UpdatePost);

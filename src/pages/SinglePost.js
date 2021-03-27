@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import renderHtml from "react-render-html";
 
 const SinglePost = (props) => {
   const [post, setPost] = useState("");
@@ -16,13 +17,17 @@ const SinglePost = (props) => {
   return (
     <React.Fragment>
       <div className="container pb-5">
-        <br />
-        <h2>{post.title}</h2>
-        <p className="lead">{post.content}</p>
-        <p>
-          Author <strong>{post.user}</strong> Published on{" "}
-          <strong>{new Date(post.createdAt).toLocaleString()}</strong>
-        </p>
+        <div className="row">
+          <div className="col-md-8 offset-md-2">
+            <br />
+            <h2>{post.title}</h2>
+            <p className="lead">{renderHtml(post && post.content)}</p>
+            <p>
+              Author <strong>{post.user}</strong> Published on{" "}
+              <strong>{new Date(post.createdAt).toLocaleString()}</strong>
+            </p>
+          </div>
+        </div>
       </div>
     </React.Fragment>
   );

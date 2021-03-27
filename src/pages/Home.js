@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { getToken, getName } from "../helpers";
+import renderHtml from "react-render-html";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -27,7 +29,11 @@ const Home = () => {
 
   const deletePost = (slug) => {
     axios
-      .delete(`${process.env.REACT_APP_API}/post/${slug}`)
+      .delete(`${process.env.REACT_APP_API}/post/${slug}`, {
+        headers: {
+          authorization: `Bearer ${getToken()}`,
+        },
+      })
       .then((response) => {
         alert(response.data.message);
         fetchPosts();
@@ -45,28 +51,32 @@ const Home = () => {
                 <Link to={`/post/${post.slug}`}>
                   <h2>{post.title}</h2>
                 </Link>
-                <p className="lead">{post.content.substring(0, 100)}</p>
+                <p className="lead">
+                  {renderHtml(post.content.substring(0, 100))}
+                </p>
                 <p>
                   Auther <strong>{post.user}</strong> Published on{" "}
                   <strong>{new Date(post.createdAt).toLocaleString()}</strong>
                 </p>
                 <hr />
               </div>
-              <div className="col-md-2">
-                <Link
-                  to={`/post/update/${post.slug}`}
-                  className="btn btn-sm btn-outline-warning"
-                >
-                  Update
-                </Link>
-                <button
-                  onClick={() => deleteConfirm(post.slug)}
-                  className="btn btn-sm btn-outline-danger"
-                  style={{ marginLeft: "5px" }}
-                >
-                  Delete
-                </button>
-              </div>
+              {getName() && (
+                <div className="col-md-2">
+                  <Link
+                    to={`/post/update/${post.slug}`}
+                    className="btn btn-sm btn-outline-warning"
+                  >
+                    Update
+                  </Link>
+                  <button
+                    onClick={() => deleteConfirm(post.slug)}
+                    className="btn btn-sm btn-outline-danger"
+                    style={{ marginLeft: "5px" }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ))}
